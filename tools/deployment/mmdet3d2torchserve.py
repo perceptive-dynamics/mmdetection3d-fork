@@ -61,6 +61,7 @@ def mmdet3d2torchserve(
                 'force': force,
                 'requirements_file': None,
                 'extra_files': None,
+                'config_file': None,
                 'runtime': 'python',
                 'archive_format': 'default'
             })
