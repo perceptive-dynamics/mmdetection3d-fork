@@ -1,6 +1,6 @@
-ARG PYTORCH="1.9.0"
-ARG CUDA="11.1"
-ARG CUDNN="8"
+ARG PYTORCH="2.5.1"
+ARG CUDA="12.4"
+ARG CUDNN="9"
 FROM pytorch/pytorch:${PYTORCH}-cuda${CUDA}-cudnn${CUDNN}-devel
 
 ARG MMCV="2.0.0rc4"
@@ -11,11 +11,11 @@ ENV PYTHONUNBUFFERED TRUE
 
 # Avoid Public GPG key error
 # https://github.com/NVIDIA/nvidia-docker/issues/1631
-RUN rm /etc/apt/sources.list.d/cuda.list \
-    && rm /etc/apt/sources.list.d/nvidia-ml.list \
-    && apt-key del 7fa2af80 \
-    && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub \
-    && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+# RUN rm /etc/apt/sources.list.d/cuda.list \
+#     && rm /etc/apt/sources.list.d/nvidia-ml.list \
+#     && apt-key del 7fa2af80 \
+#     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub \
+#     && apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
 
 # (Optional, use Mirror to speed up downloads)
 # RUN sed -i 's/http:\/\/archive.ubuntu.com\/ubuntu\//http:\/\/mirrors.aliyun.com\/ubuntu\//g' /etc/apt/sources.list
@@ -41,13 +41,17 @@ ARG PYTORCH
 ARG CUDA
 RUN pip install openmim
 RUN mim install mmengine
-RUN mim install mmcv==${MMCV}
-RUN mim install mmdet==${MMDET}
+# RUN mim install mmcv==${MMCV}
+# RUN mim install mmdet==${MMDET}
 # RUN mim install mmdet3d==${MMDET3D}
 RUN pip install --upgrade pip &&\
     pip --version &&\
+    pip install wheel &&\
     pip install uv
-RUN uv pip install mmdet3d==${MMDET3D}
+
+RUN uv pip install mmcv==${MMCV} --system && \
+    uv pip install mmdet==${MMDET} --system && \
+    uv pip install mmdet3d==${MMDET3D} --system
 
 RUN useradd -m model-server \
     && mkdir -p /home/model-server/tmp
